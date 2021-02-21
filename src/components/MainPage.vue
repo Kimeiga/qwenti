@@ -75,12 +75,13 @@ export default {
   },
   methods: {
     addEvent() {
+      const eventName = this.eventName ? this.eventName : "Event";
       db.collection("events")
         .add({
           startTime: this.startTime,
           endTime: this.endTime,
           range: this.range,
-          eventName: this.eventName,
+          eventName,
           timezone: this.timezone,
         })
         .then((docRef) => {
