@@ -12,9 +12,8 @@
     <button>Sign In</button>
 
     <Calendar
-      :range="event.range"
-      :startTime="event.startTime"
-      :endTime="event.endTime"
+      :startTimestamp="event.startTimestamp"
+      :endTimestamp="event.endTimestamp"
     />
   </div>
 </template>

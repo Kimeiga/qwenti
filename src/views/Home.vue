@@ -44,6 +44,7 @@
 <script>
 import TimezonePicker from "@/components/TimezonePicker.vue";
 import { db } from "@/db";
+import { getDateTime } from "@/getDateTime";
 
 export default {
   name: "Home",
@@ -77,11 +78,14 @@ export default {
   methods: {
     addEvent() {
       const eventName = this.eventName ? this.eventName : "Event";
+
+      const startTimestamp = getDateTime(this.range.start, this.startTime);
+      const endTimestamp = getDateTime(this.range.end, this.endTime);
+
       db.collection("events")
         .add({
-          startTime: this.startTime,
-          endTime: this.endTime,
-          range: this.range,
+          startTimestamp,
+          endTimestamp,
           eventName,
           timezone: this.timezone,
         })

@@ -1,6 +1,9 @@
 <template>
   <div>
+    <h3>Start Date</h3>
     {{ startDate }}
+    <h3>End Date</h3>
+    {{ endDate }}
     <div v-for="time in timeArray" :key="time.toString()">
       {{ time }}
     </div>
@@ -15,14 +18,19 @@
 import moment from "moment";
 // import twix from "twix";
 import "twix";
-import getDateTime from "@/getDateTime";
+// import { getDateTimeMoment } from "@/getDateTime";
 export default {
   props: {
-    range: Object,
-    startTime: Object,
-    endTime: Object,
+    startTimestamp: Object,
+    endTimestamp: Object,
   },
   computed: {
+    startDate() {
+      return this.startTimestamp ? this.startTimestamp.toDate() : null;
+    },
+    endDate() {
+      return this.endTimestamp ? this.endTimestamp.toDate() : null;
+    },
     timeArray() {
       if (!this.range) {
         return "";
@@ -30,18 +38,6 @@ export default {
       return moment
         .twix(this.startTime.toDate(), this.endTime.toDate())
         .toArray("hours");
-    },
-    startDate() {
-      if (!this.range) {
-        return "";
-      }
-      return getDateTime(this.range.start.toDate(), this.startTime.toDate());
-    },
-    endDate() {
-      if (!this.range) {
-        return "";
-      }
-      return getDateTime(this.range.end.toDate(), this.endTime.toDate());
     },
     dateArray() {
       if (!this.range) {
@@ -64,17 +60,6 @@ export default {
         range.push(dateItr.next().toDate());
       }
       return range;
-    },
-  },
-  methods: {
-    getDateTime(date, time) {
-      return moment([
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        time.getHours(),
-        time.getMinutes(),
-      ]);
     },
   },
 };
