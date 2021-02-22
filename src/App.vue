@@ -7,3 +7,14 @@
     <router-view />
   </div>
 </template>
+
+<style>
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+</style>

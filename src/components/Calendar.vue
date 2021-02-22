@@ -1,21 +1,23 @@
 <template>
   <div>
-    <h3>Start Date</h3>
-    {{ startDate }}
-    <h3>End Date</h3>
-    {{ endDate }}
-    <h3>Start Time</h3>
-    {{ startTime }}
-    <h3>End Time</h3>
-    {{ endTime }}
-
-    <div class="calendar" :style="cssVars">
+    <div class="calendar">
+      <div class="hour-column">
+        <div
+          v-for="hour in hourSpan"
+          :key="hour.toString()"
+          class="hour-marker"
+          :data-hour="hour.format('h A')"
+          :data-hour-plus-one="hour.add({ hour: 1 }).format('h A')"
+        >
+          <!-- {{ hour.hour() }} -->
+        </div>
+      </div>
       <div
         class="date-column"
         v-for="dateArray in date2DArray"
         :key="dateArray[0].toString()"
       >
-        <DateTimeCell
+        <HourCell
           v-for="datetime in dateArray"
           :key="datetime.toString()"
           :datetime="datetime"
@@ -28,23 +30,17 @@
 <script>
 import moment from "moment";
 import "twix";
-import DateTimeCell from "@/components/DateTimeCell";
+import HourCell from "@/components/HourCell";
 
 export default {
   components: {
-    DateTimeCell,
+    HourCell,
   },
   props: {
     startTimestamp: Object,
     endTimestamp: Object,
   },
   computed: {
-    cssVars() {
-      return {
-        "--rows": this.timeSpan,
-        "--columns": this.dateSpan,
-      };
-    },
     startDate() {
       return this.startTimestamp ? this.startTimestamp.toDate() : null;
     },
@@ -67,11 +63,24 @@ export default {
           })
         : null;
     },
-    dateSpan() {
+    hourSpan() {
+      if (
+        !this.startDate ||
+        !this.endDate ||
+        !this.endTime ||
+        !this.startTime
+      ) {
+        return;
+      }
+      return moment(this.startDate)
+        .twix(moment(this.startDate).add(this.endTime - this.startTime))
+        .toArray("hours");
+    },
+    dateCount() {
       return moment.twix(this.startDate, this.endDate).count("days");
     },
-    timeSpan() {
-      return moment.duration(this.endTime - this.startTime).asMinutes() / 15;
+    hourCount() {
+      return moment.duration(this.endTime - this.startTime).asHours();
     },
     date2DArray() {
       if (
@@ -87,8 +96,8 @@ export default {
       let i = 0;
 
       let range = Array.from(
-        Array(this.dateSpan),
-        () => new Array(this.timeSpan)
+        Array(this.dateCount),
+        () => new Array(this.hourCount)
       );
       while (dateItr.hasNext()) {
         // new date
@@ -98,7 +107,7 @@ export default {
         range[i] = moment(currentDate)
           .add(this.startTime)
           .twix(moment(currentDate).add(this.endTime))
-          .toArray(15, "minutes");
+          .toArray("hours");
         i++;
       }
 
@@ -109,21 +118,48 @@ export default {
 </script>
 
 <style>
-/* .calendar {
-  display: grid;
-  grid-template-columns: repeat(var(--columns), 1fr);
-  grid-template-rows: repeat(var(--rows), 1fr);
-} */
 .calendar {
   display: flex;
-  width: 100%;
+  position: relative;
+  /* width: 100%; */
   height: 90vh;
   justify-content: stretch;
+  /* margin: 30px; */
 }
 .calendar .date-column {
   justify-content: stretch;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+}
+.hour-column {
+  justify-content: stretch;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 3;
+}
+
+.date-column:last-child {
+  border-right: 1px black solid;
+}
+.inner-calendar {
+  border-right: 1px black solid;
+  border-bottom: 1px black solid;
+}
+.hour-marker {
+  flex-grow: 1;
+}
+.hour-marker:before {
+  position: absolute;
+  content: attr(data-hour);
+  transform: translate(-100%, -50%);
+  left: 10%;
+}
+.hour-marker:last-child::after {
+  position: absolute;
+  content: attr(data-hour-plus-one);
+  transform: translate(-100%, 50%);
+  left: 10%;
+  bottom: 0;
 }
 </style>
