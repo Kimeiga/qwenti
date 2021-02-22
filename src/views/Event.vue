@@ -10,16 +10,24 @@
     <label for="password">Your Password (optional)</label>
     <input type="password" name="password" id="password" />
     <button>Sign In</button>
+
+    <Calendar
+      :range="event.range"
+      :startTime="event.startTime"
+      :endTime="event.endTime"
+    />
   </div>
 </template>
 
 <script>
 import { db } from "../db";
 import TimezonePicker from "@/components/TimezonePicker.vue";
+import Calendar from "@/components/Calendar.vue";
 
 export default {
   components: {
     TimezonePicker,
+    Calendar,
   },
   data() {
     return {
