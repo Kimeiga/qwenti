@@ -1,3 +1,4 @@
+ 
 <template>
   <div class="event">
     <div>
@@ -11,6 +12,8 @@
       <label for="password">Your Password (optional)</label>
       <input type="password" name="password" id="password" />
       <button>Sign In</button>
+      
+    <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess" :onFailure="onFailure">Login</GoogleLogin>
     </div>
 
     <Calendar
@@ -25,17 +28,29 @@ import { db } from "../db";
 import TimezonePicker from "@/components/TimezonePicker.vue";
 import Calendar from "@/components/Calendar.vue";
 import moment from "moment";
+import GoogleLogin from 'vue-google-login';
+
 
 export default {
   components: {
     TimezonePicker,
     Calendar,
+    GoogleLogin,
   },
   data() {
     return {
+      params: {
+        client_id: "<ask rishan for id>",
+      },
       event: {},
       yourTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
+  },
+  methods: {
+    onSuccess(googleUser) {
+      console.log(googleUser);
+      console.log(googleUser.getBasicProfile());
+    }
   },
   computed: {
     startDate() {
